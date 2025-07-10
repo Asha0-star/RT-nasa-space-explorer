@@ -28,7 +28,6 @@ body {
 h1 {
   font-family: 'Inter', Arial, sans-serif;
   font-weight: 700;
-  color: #000000;
 }
 
 /* Logo */
@@ -64,13 +63,8 @@ button {
   gap: 8px;
 }
 
-button:hover {
-  background-color: #000000;
-}
-
 button:disabled {
-  background-color: #000000;
-  opacity: 0.7;
+  background-color: #888888;
   cursor: not-allowed;
 }
 
