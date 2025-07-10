@@ -1,7 +1,17 @@
-// NASA API key (replace 'DEMO_KEY' with your actual API key)
-const API_KEY = 'j09eKjAUN60ktWyR8AS50VbpWdsfLxUdGeAqFn4z';
-const API_URL = 'https://api.nasa.gov/planetary/apod';
+// To get your NASA API key:
+// 1. Go to https://api.nasa.gov
+// 2. Fill out the form to sign up for an API key
+// 3. Copy your key and paste it below instead of 'DEMO_KEY'
+// Note: DEMO_KEY has a low rate limit, so get your own key for better access
+const API_KEY = 'DEMO_KEY';
 
+// The NASA APOD API endpoint
+// 1. Find the correct endpoint URL at: https://api.nasa.gov
+// 2. Look for "Astronomy Picture of the Day (APOD)" in the API catalog
+// 3. Copy only the endpoint URL and paste it below
+const API_URL = ''; 
+
+// Select button and gallery elements
 const prevWeekBtn = document.getElementById('prevWeek');
 const nextWeekBtn = document.getElementById('nextWeek');
 const gallery = document.getElementById('gallery');
