@@ -42,7 +42,6 @@ h1 {
 .button-row {
   display: flex;
   gap: 10px;
-  justify-content: center;
   margin-bottom: 20px;
   padding: 0; 
 }
@@ -94,10 +93,7 @@ button:disabled {
 
 /* Placeholder content */
 .placeholder {
-  flex: 1 1 100%;
-  text-align: center;
-  padding: 40px;
-  color: #000000;
+  padding-top: 40px;
 }
 
 .placeholder-icon {
