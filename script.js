@@ -1,105 +1,111 @@
-// To get your NASA API key:
-// 1. Go to https://api.nasa.gov
-// 2. Fill out the form to sign up for an API key
-// 3. Copy your key and paste it below instead of 'DEMO_KEY'
-// Note: DEMO_KEY has a low rate limit, so get your own key for better access
-const API_KEY = 'DEMO_KEY';
+function fetchNasaImages() {
+  // Get the selected start and end dates from the inputs
+  const startDate = startDateInput.value;
+  const endDate = endDateInput.value;
 
-// The NASA APOD API endpoint
-// 1. Find the correct endpoint URL at: https://api.nasa.gov
-// 2. Look for "Astronomy Picture of the Day (APOD)" in the API catalog
-// 3. Copy only the endpoint URL and paste it below
-const API_URL = ''; 
+  // Check if both dates are selected
+  if (!startDate || !endDate) {
+    alert("Please select both start and end dates.");
+    return;
+  }
 
-// Select button and gallery elements
-const prevWeekBtn = document.getElementById('prevWeek');
-const nextWeekBtn = document.getElementById('nextWeek');
-const gallery = document.getElementById('gallery');
+  // Check if start date is before or equal to end date
+  if (startDate > endDate) {
+    alert("Start date must be before or equal to end date.");
+    return;
+  }
 
-// Track current date
-let currentDate = new Date();
+  // Show loading message
+  gallery.innerHTML = "<p>Loading images...</p>";
 
-// Store today's date once
-const TODAY = new Date();
+  // Build the API URL with the selected date range
+  const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&start_date=${startDate}&end_date=${endDate}`;
 
-// Format date as YYYY-MM-DD
-function formatDate(date) {
-    return date.toISOString().split('T')[0];
-}
+  // Fetch data from NASA APOD API
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      // Make sure data is always an array
+      const images = Array.isArray(data) ? data : [data];
 
-// Fetch images for a date range
-async function fetchImages(startDate, endDate) {
-    gallery.innerHTML = `<div class="placeholder"><p>🔄 Loading space photos…</p></div>`;
+      // Filter out non-image results (sometimes there are videos)
+      const imageItems = images.filter(item => item.media_type === "image");
 
-    try {
-        const response = await fetch(
-            `${API_URL}?api_key=${API_KEY}&start_date=${startDate}&end_date=${endDate}`
-        );
-        if (!response.ok) throw new Error();
-        const data = await response.json();
-        displayImages(data);
-    } catch (error) {
-        gallery.innerHTML = `<div class="placeholder"><p>Failed to load images. Please try again.</p></div>`;
-    }
-}
-
-// Navigate to previous/next week
-function navigateWeek(direction) {
-    // Get new date
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + (direction * 7));
-    
-    // Don't navigate past today
-    if (newDate > TODAY) {
+      // If no images found, show a message
+      if (imageItems.length === 0) {
+        gallery.innerHTML = "<p>No images found for this date range.</p>";
         return;
-    }
-    
-    // Update current date and fetch
-    currentDate = newDate;
-    const endDate = new Date(currentDate);
-    const startDate = new Date(currentDate);
-    startDate.setDate(startDate.getDate() - 6);
-    
-    // Disable next button if we're in current week
-    nextWeekBtn.disabled = endDate >= TODAY;
-    fetchImages(formatDate(startDate), formatDate(endDate));
-}
+      }
 
-// Event listeners
-prevWeekBtn.addEventListener('click', () => navigateWeek(-1));
-nextWeekBtn.addEventListener('click', () => navigateWeek(1));
+      // Clear the gallery and show each image
+      gallery.innerHTML = "";
+      imageItems.forEach(item => {
+        // Create a div for each gallery item
+        const div = document.createElement("div");
+        div.className = "gallery-item";
 
-// Initial load - show current week
-currentDate = new Date();
-navigateWeek(0);
+        // Use template literals to build HTML
+        div.innerHTML = `
+          <img src="${item.url}" alt="${item.title}" />
+          <h3>${item.title}</h3>
+          <p><strong>Date:</strong> ${item.date}</p>
+          
+        `;
 
-// Display images in the gallery
-function displayImages(images) {
-    gallery.innerHTML = '';
-    if (images.length === 0) {
-        gallery.innerHTML = `<div class="placeholder"><p>No images found for the selected date range.</p></div>`;
-        return;
-    }
+        // Add to gallery
+        gallery.appendChild(div);
 
-    images.forEach(image => {
-        if (image.media_type !== 'image') return; // Skip non-image media
-
-        const formattedDate = new Date(image.date + 'T00:00:00').toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+                // Add click event to open modal with this item's info
+        div.addEventListener('click', () => {
+          openModal(item);
         });
 
-        const item = `
-            <div class="gallery-item" title="${image.explanation}">
-                <div class="gallery-item-img-container">
-                    <img src="${image.url}" alt="${image.title}">
-                </div>
-                <p class="gallery-item-title">${image.title}</p>
-                <p class="gallery-item-date">${formattedDate}</p>
-            </div>
-        `;
-        
-        gallery.insertAdjacentHTML('beforeend', item);
+        // Add to gallery
+        gallery.appendChild(div);
+      });
+    })
+    .catch(error => {
+      // Show error message
+      gallery.innerHTML = "<p>Sorry, there was an error loading images.</p>";
+      console.error(error);
     });
 }
+
+// Modal logic
+// Get modal elements
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modal-img");
+const modalTitle = document.getElementById("modal-title");
+const modalExplanation = document.getElementById("modal-explanation");
+const modalDate = document.getElementById("modal-date");
+const modalClose = document.getElementById("modal-close");
+
+// Function to open modal with item info
+function openModal(item) {
+  modalImg.src = item.url;
+  modalImg.alt = item.title;
+  modalTitle.textContent = item.title;
+  modalExplanation.textContent = item.explanation;
+  modalDate.innerHTML = `<strong>Date:</strong> ${item.date}`;
+  modal.style.display = "flex";
+}
+
+// Close modal when X is clicked
+modalClose.addEventListener('click', () => {
+  modal.style.display = "none";
+});
+
+// Also close modal when clicking outside modal content
+modal.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
+
+
+// Call the setupDateInputs function from dateRange.js
+// This sets up the date pickers to:
+// - Default to a range of 9 days (from 9 days ago to today)
+// - Restrict dates to NASA's image archive (starting from 1995)
+
