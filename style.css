@@ -77,7 +77,7 @@ button {
 /* Button specific */
 button {
   background-color: #E4002B;
-  color: black;
+  color: rgb(237, 237, 237);
   cursor: pointer;
   font-weight: bold;
 }
