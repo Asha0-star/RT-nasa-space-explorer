@@ -1,5 +1,5 @@
 // NASA APOD API key (use DEMO_KEY for testing)
-const API_KEY = "DEMO_KEY"; // Replace with your own API key for more requests
+const API_KEY = "Pv3Fc1GdFAB35O5AvQicz41vw37NvNrUHjAhJyFY"; // Replace with your own API key for more requests
 
 
 // Get references to the date inputs, button, and gallery
